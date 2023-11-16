@@ -64,3 +64,65 @@ char *read_line(FILE *source)
 
 	return (line);
 }
+
+/**
+ * handle_script_file - Handles scripts or files as command line arguments
+ * @script_filename: Name of the file or script passed
+ */
+
+void handle_script_file(char *script_filename)
+{
+	char *line;
+	char **args;
+	int status;
+	int ctrl_c_pressed = 1;
+
+	FILE *script_file = fopen(script_filename, "r");
+
+	if (!script_file)
+	{
+		perror("shell");
+		exit(EXIT_FAILURE);
+	}
+
+	while ((line = read_line(script_file)) != NULL)
+	{
+		args = parse_line(line);
+		status = execute_command(args);
+
+		free(line);
+		free(args);
+
+		if (!status || ctrl_c_pressed)
+			break;
+	}
+	fclose(script_file);
+}
+
+/**
+ * handle_user_input - Handles user input from STDIN
+ */
+
+void handle_user_input(void)
+{
+	char *line;
+	char **args;
+	int ctrl_c_pressed = 1;
+
+	do {
+		display_prompt();
+		fflush(stdout);
+
+		line = read_line(stdin);
+		if (line == NULL)
+			break;
+
+		args = parse_line(line);
+		execute_command(args);
+
+		free(line);
+		free(args);
+	} while (!ctrl_c_pressed);
+
+	printf("\nShell terminated by Ctrl+C\n");
+}

@@ -10,9 +10,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 
 extern char **environ;
-extern volatile sig_atomic_t ctrl_c_pressed;
 
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARG_SIZE 64
@@ -31,7 +31,8 @@ char *read_line(FILE *source);
 void sigint_handler(int signum);
 void display_prompt(void);
 int main(int argc, char **argv);
-
+void handle_script_file(char *script_filename);
+void handle_user_input(void);
 
 
 #endif /* SHELL_H */

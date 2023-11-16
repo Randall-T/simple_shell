@@ -9,8 +9,6 @@
 
 int execute_builtin(char **args)
 {
-	int cd_result = shell_cd(args);
-
 	if (args == NULL || args[0] == NULL)
 	{
 		return (1);
@@ -22,11 +20,7 @@ int execute_builtin(char **args)
 	}
 	else if (strcmp(args[0], "cd") == 0)
 	{
-		if (cd_result != 0)
-		{
-			fprintf(stderr, "shell: cd: error changing directory\n");
-		}
-		return (1);
+		return (shell_cd(args));
 	}
 	else if (strcmp(args[0], "env") == 0)
 	{
@@ -87,48 +81,21 @@ int shell_exit(char **args)
 
 int shell_cd(char **args)
 {
-	char *target_dir = args[1];
-	char *current_dir = getcwd(NULL, 0);
+	const char *target_dir = args[1] ? args[1] : getenv("HOME");
 
-	if (target_dir == NULL)
+	if (!target_dir)
 	{
-		target_dir = getenv("HOME");
-		if (target_dir == NULL)
-		{
-			fprintf(stderr, "shell: cd: HOME not set\n");
-			return (1);
-		}
-	}
-	else if (strcmp(target_dir, "-") == 0)
-	{
-		target_dir = getenv("OLDPWD");
-		if (target_dir == NULL)
-		{
-			fprintf(stderr, "shell: cd: OLDPWD not set\n");
-			return (1);
-		}
-	}
-
-	if (current_dir == NULL)
-	{
-		perror("shell");
+		fprintf(stderr, "shell: cd: HOME not set\n");
 		return (1);
+
 	}
 
 	if (chdir(target_dir) != 0)
 	{
 		perror("shell");
-		free(current_dir);
 		return (1);
 	}
 
-	if (setenv("OLDPWD", current_dir, 1) != 0)
-	{
-		perror("shell");
-	}
-
-	free(current_dir);
-
-	return (0);
+	return (1);
 }
 
