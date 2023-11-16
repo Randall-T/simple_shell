@@ -25,7 +25,7 @@ int execute_command(char **args)
 	}
 	if (access(args[0], X_OK) == -1)
 	{
-		fprintf(stderr, "shell: %s: command not found or executable\n", args[0]);
+		fprintf(stderr, "shell: %s: command not found\n", args[0]);
 		return (1);
 	}
 
